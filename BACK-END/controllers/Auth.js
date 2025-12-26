@@ -105,8 +105,8 @@ exports.login = async (req, res) => {
             return res.status(401).json({ success: false, message: 'User not found, please sign up' });
         }
         //jwt after password matching
-        if(!await bcrypt.compare(password, user.password)){
-            const payload = { id: user._id, email: user.email,role: user.role, };
+        if(await bcrypt.compare(password, user.password)){
+            const payload = { id: user._id, email: user.email, accountType: user.accountType };
             const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '2h' });
             user.token = token;
             user.password = undefined; 
