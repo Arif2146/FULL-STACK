@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const mailSender = require('../utils/mailSender');
+const bcrypt = require('bcrypt');
 
 
 
@@ -45,3 +46,48 @@ exports.resetPasswordToken = async (req, res) => {
 
 
 //reset password
+
+
+exports.resetPassword = async (req, res) => {
+    try{
+       const {password, confirmPassword, token} = req.body;
+       if (password !==confirmPassword) {
+        return res.status(400).json({
+            success: false,
+            message: 'Passwords do not match',
+        });
+    };
+    const userDetails = await User.findOne({ token : token });
+    if (! userDetails) {
+        return res.status(404).json({
+            success: false,
+            message: 'Invalid or expired token',
+        });
+    }
+    if (userDetails.resetPasswordExpires < Date.now()) {
+        return res.status(400).json({
+            success: false,
+            message: 'Token has expired',
+        });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await User.findOneAndUpdate(
+        { token: token },
+        {
+            password: hashedPassword,
+        },
+        { new: true }
+    );
+    res.status(200).json({
+        success: true,
+        message: 'Password reset successfully',
+    });
+}
+    catch(error){
+        console.error('Error in resetPassword:', error);
+    res.status(500).json({
+        success: false,
+        message: 'Internal Server Error',
+    });
+    }
+}
