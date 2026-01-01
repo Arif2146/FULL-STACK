@@ -52,3 +52,14 @@ exports.createCourse = async (req,res) => {
     }
 }
 //get a course
+
+
+exports.showAllCourses = async (req, res) => {
+    try {
+        const allCourses = await Course.find({},{courseName:true,thumbnail:true,price:true,instructor:true,ratingAndReviews:true,studentsEnrolled:true}).populate('instructor').exec();
+        return res.status(200).json({ message: "Courses fetched successfully", success: true, data:allCourses });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "failed to fetch courses", success: false, error: error.message });
+    }
+}
