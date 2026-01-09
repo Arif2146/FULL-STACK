@@ -21,6 +21,24 @@ exports.createSection = async (req, res) => {
          //return res
          return res.status(201).json({ message: "Section created successfully", success: true,updatedCourseDetails });
     }catch (error) {
-        res.status(500).json({ message:`unabel to create section cause of error: ${error.message}`, success: false, });
+        res.status(500).json({ message:`unabel to create section cause of error: ${error.message}`, success: false,});
     }
+}
+exports.updateSections = async (req, res) => {
+    try {
+        //data input
+        const {sectionName,sectionId}= req.body;
+        //data validate
+        if(!sectionName || !sectionId){
+            return res.status(400).json({ message: "All fields are required", success: false });
+         }
+        //update data
+        const section = await Section.findByIdAndUpdate(sectionId,{sectionName},{new:true});
+        //return res
+        return res.status(200).json({ message: "Section updated successfully", success: true,});
+        //return res
+    }catch (error) {
+        res.status(500).json({ message: `unabel to update section cause of error: ${error.message}`, success: false, });
+    }
+
 }
