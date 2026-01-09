@@ -42,3 +42,18 @@ exports.updateSections = async (req, res) => {
     }
 
 }
+
+exports.deleteSection = async (req, res) => {
+    try {
+       //get Id
+       const {sectionId}= req.params;
+       //use findbyidanddel
+       await Section.findByIdAndDelete(sectionId);
+       //return res
+       return res.status(200).json({ message: "Section deleted successfully", success: true,});
+
+
+    }catch (error) {
+        res.status(500).json({ message: `unabel to delete section cause of error: ${error.message}`, success: false, });
+    }
+}
