@@ -28,3 +28,34 @@ exports.updateProfile = async (req, res) => {
        return res.status(500).json({ message: error.message, success: false });
     }
 }
+
+exports.deleteAccount = async (req, res) => {
+    try {
+        //get userid
+        const id = req.user.id;
+        //validation
+        const userDetails = await User.findById(id);
+        if(!userDetails){
+            return res.status(404).json({ message: "User not found", success: false });
+        }
+        //delete profile
+        await Profile.findByIdAndDelete({_id:userDetails.additionalDetails});
+        //del user
+        await User.findByIdAndDelete({_id:id});
+        //return res
+        return res.status(200).json({ message: "Profile deleted successfully", success: true });
+    } catch (error) {
+      return res.status(500).json({ message: error.message, success: false });
+    }
+}
+
+exports.getAllUserDetails = async (req, res) => {
+      try {
+        const id = req.user.id;
+        const userDetails = await User.findById(id).populate('additionalDetails').exec();
+        return res.status(200).json({ message: "User details fetched successfully", success: true,userDetails });
+
+      } catch (error) {
+        return res.status(500).json({ message: error.message, success: false });
+      }
+}
